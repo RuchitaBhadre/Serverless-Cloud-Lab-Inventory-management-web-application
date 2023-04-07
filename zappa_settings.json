@@ -1,0 +1,10 @@
+{
+    "dev": {
+        "app_function": "app.app",
+        "aws_region": "us-east-1",
+        "profile_name": "default",
+        "project_name": "newzappa",
+        "runtime": "python3.9",
+        "s3_bucket": "ruchi-asyc"
+    }
+}
