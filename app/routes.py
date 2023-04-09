@@ -26,12 +26,7 @@ def before_request():
 def login():
 	session.pop('username',None)
 	return render_template('login.html')
-"""def index():
-    return render_template('index.html')
-"""
-@app.route('/api/')
-def api():
-    return {'hello' : 'world'}
+
 
 @app.route('/register')
 def register():
@@ -62,7 +57,7 @@ def login_validation():
 					flash('Incorrect Password')
 					return redirect(url_for('login'))
 			elif(res['VerificationAttributes'][result[0][0]['Email_Id']]['VerificationStatus']=='Pending'):
-				flash('Email needs to be activate')
+				flash('Email needs to be activated')
 				return redirect(url_for('login'))
 	except:
 		res=ses_client.get_identity_verification_attributes(Identities=[result[0][0]['Email_Id'],])
@@ -98,3 +93,47 @@ def registration():
 	else:
 		flash(f'{result[1]} already in use')
 		return redirect(url_for('register'))
+
+
+@app.route('/admin/modify')
+def modify():
+	return render_template('modify.html')
+
+@app.route('/admin/delete')
+def delete():
+	return render_template('deletedevice.html')
+
+
+@app.route('/admin/add')
+def add():
+	return render_template('adddevice.html')
+
+@app.route('/admin/delete_user')
+def delete_user():
+	return render_template('delete_user.html')
+
+@app.route('/admin/view_list')
+def view_list():
+	display=DynamoDB.get_all_devices()
+	return render_template('view_list.html',display=display)
+
+@app.route('/admin/view_user_list')
+def view_user_list():
+	display=DynamoDB.get_all_rental()
+	return render_template('view_user_list.html',display=display)
+
+
+@app.route('/admin/return_device',methods=['POST','GET'])
+def ret_device():
+	if request.method == 'POST':
+		result=DynamoDB.returned_device(request.form.get('Username'),request.form.get('Title'))
+		if(result == "Done"):
+			flash("Device Returned")
+			return render_template('return_device.html')
+		elif(result == "User Invalid"):
+			flash("User has not rented any device")
+			return render_template('return_device.html')
+		else:
+			flash("Incorrect Device. Device not rented by user")
+			return render_template('return_device.html')
+	return render_template('return_device.html')

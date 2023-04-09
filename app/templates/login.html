@@ -20,7 +20,7 @@
 		}
 
 		a.Register:link, a.Register:visited, a.Register:focus {
-		 	background: linear-gradient(to right, #11998e, #38ef7d);
+		 	background: linear-gradient(to right,#800080, #dda0dd);
 		}
 
 		a.Register:hover {
@@ -42,22 +42,22 @@
 		}
 		.bg-nav{
 			background: #fd746c;  /* fallback for old browsers */
-			background: -webkit-linear-gradient(to right, #ff9068, #fd746c);  /* Chrome 10-25, Safari 5.1-6 */
-			background: linear-gradient(to right, #11998e, #38ef7d); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+			background: -webkit-linear-gradient(to right, #800080, #dda0dd);  /* Chrome 10-25, Safari 5.1-6 */
+			background: linear-gradient(to right, #800080, #dda0dd); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 		}
 	</style>
 </head>
 <body class="bg-nav" style="background-color: papayawhip;">
 	<!--<h1>Cloud Library</h1>-->
-	<div style="margin: 5%;padding: 5%;background-image: url(https://zappa-xfq7q9ia6.s3.amazonaws.com/Library_books.jpg);border-radius:25px;background-position: center;background-size: cover;">
-		<div style="border: 0.5px;text-align: center;width: 40%;margin: auto;background-color: mintcream;">
-			<h1 style="font-family:verdana;color: white;margin: unset;padding: 15px;background: linear-gradient(to right, #11998e, #38ef7d);">Login</h1>
+	<div style="margin: 5%;padding: 5%;background-image: url(https://zappa-1jt721ylc.s3.amazonaws.com/ece.jpg);border-radius:25px;background-position: center;background-size: cover;">
+		<div style="border: 0.5px;text-align: center;width: 40%;margin: auto;background-color: #e6e6fa;">
+			<h1 style="font-family:verdana;color: white;margin: unset;padding: 15px;background: linear-gradient(to right, #800080, #dda0dd);">Login</h1>
 		</div>
-		<div style="border-right: 0.5px;border-left: 0.5px;border-top: 0.5px solid;border-bottom: 0.5px solid;text-align: center;width: 40%;margin: auto;background-color: mintcream;padding-top: 5px;padding-bottom: 5px;">
+		<div style="border-right: 0.5px;border-left: 0.5px;border-top: 0.5px solid;border-bottom: 0.5px solid;text-align: center;width: 40%;margin: auto;background-color: #e6e6fa;padding-top: 5px;padding-bottom: 5px;">
 			<a style="font-family:verdana;outline: 0.5px solid white;text-decoration: none;display: inline-block;width: 19.5%;text-align: center;line-height: 3;color: white;border-radius:5px;" href="{{ url_for('register') }}" class="Register">Register</a>
 		</div>
 
-		<div style="border: 0.5px ;text-align: center;width: 40%;margin: auto;background-color: mintcream;padding-top: 5px;padding-bottom: 5px;">
+		<div style="border: 0.5px ;text-align: center;width: 40%;margin: auto;background-color: #e6e6fa;padding-top: 5px;padding-bottom: 5px;">
 			{% with messages = get_flashed_messages() %}
 		  {% if messages %}
 		    {% for message in messages %}
