@@ -5,6 +5,6 @@
         "profile_name": "default",
         "project_name": "newzappa",
         "runtime": "python3.9",
-        "s3_bucket": "ruchi-asyc"
+        "s3_bucket": "zappa-1jt721ylc"
     }
 }
