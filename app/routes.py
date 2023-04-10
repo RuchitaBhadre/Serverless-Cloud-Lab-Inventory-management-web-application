@@ -40,6 +40,7 @@ def login_validation():
 	Username=request.form.get("Username")
 	Password=request.form.get("Password")
 	result=DynamoDB.get_item(Username=Username,Email="")
+	print(result)
 	if(result[0]==[]):
 			flash('Username does not exist')
 			return redirect(url_for('login'))
@@ -54,6 +55,7 @@ def login_validation():
 					else:
 						return render_template('error.html')
 				else:
+
 					flash('Incorrect Password')
 					return redirect(url_for('login'))
 			elif(res['VerificationAttributes'][result[0][0]['Email_Id']]['VerificationStatus']=='Pending'):
