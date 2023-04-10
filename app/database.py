@@ -138,7 +138,7 @@ class dynamoManager:
             )
         return response['Items']
 
-    def get_specific_item(self,Title):
+    def get_specific_item(self,Title,MFD):
         self.start_instance()
         table=self.dynamo_.Table('Devices')
         response=table.query(
