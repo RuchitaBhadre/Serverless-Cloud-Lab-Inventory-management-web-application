@@ -2,14 +2,14 @@ import boto3
 from boto3.dynamodb.conditions import Key, Attr
 from datetime import datetime,timedelta
 
+
 class dynamoManager:
 
     def __init__(self,key_id="AKIARQKRVO4SRFYI4KPJ",secret_key="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",region="us-east-1"):
         self.key_id=key_id
         self.secret_key=secret_key
         self.region=region
-        self.id=self.check_id()
-
+        #self.id=self.check_id()
 
     def check_id(self):
         self.start_instance()
@@ -84,7 +84,7 @@ class dynamoManager:
             return ("Not Done")
 
 
-    def add_device(self,Title,MFD,Units):
+    def add_device(self,Title,MFD,Units,Brand):
         self.start_instance()
         check=self.get_specific_item(Title,MFD)
         if(check == True):
@@ -92,7 +92,8 @@ class dynamoManager:
             new_item=table.put_item(
             Item={
                 'Device Title':Title.upper(),
-                'Device Id':int(self.check_id())+1,
+                #'Device Id':int(self.check_id())+1,
+                'Brand' : Brand.upper(),
                 'Manufacturing date':MFD,
                 'Units':int(Units),
                 }
@@ -149,7 +150,7 @@ class dynamoManager:
         else:
             return (False)
 
-    def searching_books(self, keyword):
+    def searching_devices(self, keyword):
         self.start_instance()
         table = self.dynamo_.Table('Devices')
         response = table.scan(

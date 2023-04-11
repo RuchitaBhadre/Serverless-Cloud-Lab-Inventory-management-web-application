@@ -24,7 +24,7 @@ def before_request():
 
 @app.route('/')
 def login():
-	session.pop('username',None)
+	session.pop('username', None)
 	return render_template('login.html')
 
 
@@ -74,8 +74,14 @@ def login_validation():
 				flash('Incorrect Password')
 				return redirect(url_for('login'))
 		elif(res['VerificationAttributes'][result[0][0]['Email_Id']]['VerificationStatus']=='Pending'):
-			flash('Email needs to be activate')
+			flash('Email needs to be activated')
 			return redirect(url_for('login'))
+
+@app.route('/user')
+def user():
+	return render_template('userhomepage.html')
+
+
 
 @app.route('/admin')
 def admin():
@@ -89,13 +95,26 @@ def registration():
 	Password=request.form.get("Password")
 	result=DynamoDB.add_item(Username=Username,Email=Email,Password=Password)
 	if(result[0] == True):
-		flash('registration successful')
+		flash('Registration Successful')
 		response = ses_client.verify_email_address(EmailAddress=Email)
 		return redirect(url_for('login'))
 	else:
 		flash(f'{result[1]} already in use')
 		return redirect(url_for('register'))
 
+@app.route('/admin/add_device',methods=['POST','GET'])
+def add_device():
+	Title=request.form.get("devname")
+	MFD=request.form.get("mfd")
+	Units=request.form.get("units")
+	Brand=request.form.get("brand")
+	result=DynamoDB.add_device(Title=Title,MFD=MFD,Units=Units,Brand=Brand)
+	if(result == True):
+		flash('Device Added Successfully')
+		return redirect(url_for('add'))
+	else:
+		flash('Device Already exists')
+		return redirect(url_for('add'))
 
 @app.route('/admin/modify')
 def modify():
@@ -109,6 +128,7 @@ def delete():
 @app.route('/admin/add')
 def add():
 	return render_template('adddevice.html')
+
 
 @app.route('/admin/delete_user')
 def delete_user():

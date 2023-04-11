@@ -9,7 +9,7 @@
           height: 100%;
           margin: 0;
           font-family: verdana;
-          background-image: url("https://zappa-xfq7q9ia6.s3.amazonaws.com/istockphoto-1263838232-612x612.jpg");
+          background-image: url("https://zappa-1jt721ylc.s3.amazonaws.com/adminpagebg.jpg");
           background-size: cover;
         }
 
@@ -115,20 +115,23 @@
       {% endwith %}
     </div>
     <!--Once the form is submitted, all the form data is forwarded to InsertBooks.php -->
-    <form action="{{url_for('add_device')}}" method="post">
+    <form class= "form" action="{{url_for('add_device')}}" method="post">
         <table border="2" align="center" cellpadding="5" cellspacing="5">
-            <td style="color:black"> Enter Title :</td>
-            <td> <input type="text" name="title" size="48" required> </td>
+            <td style="color:black"> Enter Device Name :</td>
+            <td> <input type="text" name="devname" size="48" required> </td>
             </tr>
-
+             <tr>
+            <td style="color:black"> Enter Brand name :</td>
+            <td> <input type="text" name="brand" size="48" required> </td>
+            </tr>
             <tr>
             <td style="color:black"> Enter Manufacturing Date :</td>
-            <td> <input type="text" name="edition" size="48" required> </td>
+            <td> <input type="text" name="mfd" size="48" required> </td>
             </tr>
             <tr>
                 <tr>
                     <td style="color:black"> Number of Units to add: </td>
-                    <td> <input type="number" name="days" size="48" min="1"> </td>
+                    <td> <input type="number" name="units" size="48" min="1"> </td>
                 </tr>
             </tr>
             <td></td>
