@@ -122,8 +122,14 @@ def modify():
 
 @app.route('/admin/delete')
 def delete():
-	return render_template('deletedevice.html')
+	return render_template('deletdevice.html')
 
+@app.route('/admin/delete_device',methods=['POST','GET'])
+def delete_device():
+	title=request.form.get("devname")
+	DynamoDB.delete_device(title.upper())
+	flash("Device info deleted")
+	return redirect(url_for('delete'))
 
 @app.route('/admin/add')
 def add():
