@@ -162,13 +162,14 @@ class dynamoManager:
             return response['Items']
 
 
-    def decreasecopy(self,Title,Units):
+    def decreasecopy(self,Title,Brand,Units):
         self.start_instance()
         current_copies=int(Units)-1
         table=self.dynamo_.Table('Devices')
         new_item1=table.update_item(
                 Key={
                     'Device Title':Title,
+                    'Brand':Brand,
 
                 },
                 UpdateExpression='SET Units = :val1',
@@ -177,13 +178,14 @@ class dynamoManager:
                 }
                 )
 
-    def increasecopy(self,Title,Units):
+    def increasecopy(self,Title,Brand,Units):
         self.start_instance()
         current_copies=int(Units)+1
         table=self.dynamo_.Table('Devices')
         new_item1=table.update_item(
                 Key={
                     'Device Title':Title,
+                    #'Brand' : Brand,
 
                 },
                 UpdateExpression='SET Units = :val1',
@@ -193,7 +195,7 @@ class dynamoManager:
                 )
 
 
-    def RentingDevice(self,username,Title,Units,IDate,RDate):
+    def RentingDevice(self,username,Title,Brand,Units,IDate,RDate):
         self.start_instance()
         if(int(Units)<=0):
             return("No Device")
@@ -205,7 +207,7 @@ class dynamoManager:
         number=1
         try:
             if(response['Items'][0]['Title1']=='None'):
-                self.decreasecopy(Title,Units)
+                self.decreasecopy(Title,Brand,Units)
                 statement='SET Title'+str(number)+' = :val1,'+'Issue'+str(number)+' = :val2,'+'Return'+str(number)+' = :val3'
                 rest=table.update_item(
                                 Key={
@@ -261,7 +263,7 @@ class dynamoManager:
                             )
                     return("Done")
         except:
-            self.decreasecopy(Title,Units)
+            self.decreasecopy(Title,Brand,Units)
             statement='SET Title'+str(number)+' = :val1,'+'Issue'+str(number)+' = :val2,'+'Return'+str(number)+' = :val3, Title2 = :val4, Issue2 = :val5, Return2 = :val6'
             if(response['Items']==[]):
                 rest=table.update_item(
@@ -280,4 +282,107 @@ class dynamoManager:
                                 }
                             )
             return("Done")
+
+    def renew(self, username, Title, Brand, RDate):
+        self.start_instance()
+        table = self.dynamo_.Table('Rent_Logs')
+        response = table.query(
+            KeyConditionExpression=Key('Username').eq(username)
+        )
+        if (response['Items'][0]['Title1'] == Title):
+            new_date = (datetime.strptime(response['Items'][0]['Return1'].replace("-", ""),
+                                          "%Y%m%d").date() + timedelta(int(RDate)))
+            rest = table.update_item(
+                Key={
+                    'Username': username,
+                    'Email Id': response['Items'][0]['Email Id']
+                },
+                UpdateExpression='SET Return1 = :val1',
+                ExpressionAttributeValues={
+                    ':val1': str(new_date)
+                }
+            )
+            return ("Done")
+        elif (response['Items'][0]['Title2'] == Title):
+            new_date = (datetime.strptime(response['Items'][0]['Return2'].replace("-", ""),
+                                          "%Y%m%d").date() + timedelta(int(RDate)))
+            rest = table.update_item(
+                Key={
+                    'Username': username,
+                    'Email Id': response['Items'][0]['Email Id']
+                },
+                UpdateExpression='SET Return2 = :val1',
+                ExpressionAttributeValues={
+                    ':val1': str(new_date)
+                }
+            )
+            return ("Done")
+        else:
+            return ("Device not rented")
+
+    def get_all_rental(self):
+        self.start_instance()
+        response = self.dynamo.scan(
+            TableName='Rent_Logs'
+        )
+        return response['Items']
+
+    def get_email_item(self, Username):
+        self.start_instance()
+        table = self.dynamo_.Table('Rent_Logs')
+        response = table.query(
+            KeyConditionExpression=Key('Username').eq(Username)
+        )
+        return [response['Items'], 'Email Id']
+    def get_email1_item(self, Username):
+        self.start_instance()
+        table = self.dynamo_.Table('Rent_Logs')
+        response = table.query(
+            KeyConditionExpression=Key('Username').eq(Username)
+        )
+        return response['Items'][0]['Email Id']
+
+    def returned_device(self, Username, Title):
+        self.start_instance()
+        table = self.dynamo_.Table('Rent_Logs')
+        response = table.query(
+            KeyConditionExpression=Key('Username').eq(Username)
+        )
+        if (response['Items'] == []):
+            return ("User Invalid")
+        Email = response['Items'][0]['Email Id']
+        if (response['Items'][0]['Title1'] == Title):
+            device_info = self.searching_devices(Title)
+            self.increasecopy(Title, device_info[0]['Brand'], device_info[0]['Units'])
+            rest = table.update_item(
+                Key={
+                    'Username': Username,
+                    'Email Id': Email
+                },
+                UpdateExpression='SET Title1 = :val1,Issue1 = :val2,Return1 = :val3',
+                ExpressionAttributeValues={
+                    ':val1': "None",
+                    ':val2': "None",
+                    ':val3': "None"
+                }
+            )
+            return ("Done")
+        elif (response['Items'][0]['Title2'] == Title):
+            device_info = self.searching_devices(Title)
+            self.increasecopy(Title, device_info[0]['Brand'], device_info[0]['Units'])
+            rest = table.update_item(
+                Key={
+                    'Username': Username,
+                    'Email Id': Email
+                },
+                UpdateExpression='SET Title2 = :val1,Issue2 = :val2,Return2 = :val3',
+                ExpressionAttributeValues={
+                    ':val1': "None",
+                    ':val2': "None",
+                    ':val3': "None"
+                }
+            )
+            return ("Done")
+        else:
+            return ("Incorrect Device")
 
