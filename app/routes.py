@@ -253,4 +253,4 @@ def confirmation():
 				return redirect(url_for('search'))
 			else:
 				flash("Maximum number of devices in account exceeded")
-				return redirect(url_for('search'))
+				return redirect(url_for('search')) 
