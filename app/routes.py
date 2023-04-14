@@ -77,9 +77,7 @@ def login_validation():
 			flash('Email needs to be activated')
 			return redirect(url_for('login'))
 
-@app.route('/user')
-def user():
-	return render_template('userhomepage.html')
+
 
 
 
@@ -127,6 +125,8 @@ def delete():
 @app.route('/admin/delete_device',methods=['POST','GET'])
 def delete_device():
 	title=request.form.get("devname")
+	#author=request.form.get("author")
+	#edition=request.form.get("edition")
 	DynamoDB.delete_device(title.upper())
 	flash("Device info deleted")
 	return redirect(url_for('delete'))
@@ -165,3 +165,92 @@ def ret_device():
 			flash("Incorrect Device. Device not rented by user")
 			return render_template('return_device.html')
 	return render_template('return_device.html')
+
+@app.route('/Normal/user')
+def user():
+	return render_template('userhomepage.html')
+
+@app.route('/Normal/user/search')
+def search():
+	return render_template('search.html')
+
+@app.route('/Normal/user/search/result',methods=['POST','GET'])
+def search_executed():
+	searching=request.form.get('search')
+	result=DynamoDB.searching_devices(searching)
+	return render_template('issue_device.html', display=result)
+
+@app.route('/Normal/user/issue',methods=['POST','GET'])
+def issue():
+	if request.method == 'POST':
+		device={"Device Title":"","Brand":"","Units":0,"Issue_Date":"","End_Date":""}
+		splits=[]
+		Check=request.form.get('Rent')
+		splits=Check.split("_")
+		device['Device Title']=splits[0]
+		device['Brand']=splits[1]
+		device['Units']=int(splits[2])
+		device['Issue_Date']=str(datetime.now().date())
+		device['End_Date']=str((datetime.now().date() + timedelta(10)))
+		return render_template('Rent.html', Device_info=device)
+	display=DynamoDB.searching_devices("")
+	return render_template('issue_device.html', display=display)
+
+@app.route('/Normal/user/renew',methods=['POST','GET'])
+def renew():
+	if request.method == 'POST':
+		Title=request.form.get('devname')
+		Brand=request.form.get('brand')
+		Days=request.form.get('days')
+		username=session.get('username')
+		result=DynamoDB.renew(username,Title.upper(),Brand,Days)
+		if(result == "Done"):
+			flash("Return date extended")
+			return render_template('renew.html')
+		else:
+			flash("Device not rented. Please provide correct data")
+			return render_template('renew.html')
+	else:
+		return render_template('renew.html')
+
+
+@app.route('/Normal/user/confirmation',methods=['POST','GET'])
+def confirmation():
+	if request.method == 'POST':
+		if(request.form.get('action2') == "Cancel"):
+			return redirect(url_for('search'))
+		else:
+			username=session.get('username')
+			result=DynamoDB.RentingDevice(username,request.form.get('devname'),request.form.get('brand'),request.form.get('Units'),request.form.get('IssueDate'),request.form.get('ReturnDate'))
+			if(result=="Done"):
+				username=session.get('username')
+				#print(username)
+				email=DynamoDB.get_email1_item(Username=username)
+				title=request.form.get('devname')
+				return_date=request.form.get('ReturnDate')
+				#print(return_date)
+				#print(email)
+				#print(title)
+				#payload = {"from_address": "preetha1999@gmail.com","from_name": "Cloud Library","to_address":email,"email_subject": "Book Rented today"}
+				#payload={"from_address": "preetha1999@gmail.com","from_name": "Cloud Library","to_address": email, "email_subject": "Book Rented today", "text":" Thank you for renting the book from our library.Please return the book by the ","issue_date":return_date,"text1":"to avoid any fine."}
+				#payload={"from_address": "preetha1999@gmail.com","from_name": "Cloud Library","to_address": email, "email_subject": "Book Rented today","user":username,"book:":title,"issue_date":return_date}
+				payload={
+  							"from_address": "ruchitabhadre@gmail.com",
+  							"from_name": "ECE TOOLS LIBRARY",
+  							"to_address": email,
+  							"email_subject": "Device Rented",
+  							"issue_date": return_date,
+  							"user": username,
+  							"device": title}
+				response = client.invoke(FunctionName='testmail4',InvocationType='RequestResponse',Payload=json.dumps(payload))
+				flash("Please collect the Device from Lab in Galbraith Building on 3rd floor")
+				return redirect(url_for('search'))
+			elif(result=="Already There"):
+				flash("Cant rent the same device again")
+				return redirect(url_for('search'))
+			elif(result=="No Device"):
+				flash("No units left")
+				return redirect(url_for('search'))
+			else:
+				flash("Maximum number of devices in account exceeded")
+				return redirect(url_for('search'))
