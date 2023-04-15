@@ -102,6 +102,11 @@ def registration():
 		flash(f'{result[1]} already in use')
 		return redirect(url_for('register'))
 
+
+@app.route('/admin/add')
+def add():
+	return render_template('adddevice.html')
+
 @app.route('/admin/add_device',methods=['POST','GET'])
 def add_device():
 	Title=request.form.get("devname")
@@ -120,6 +125,20 @@ def add_device():
 def modify():
 	return render_template('modify.html')
 
+@app.route('/admin/modify_device',methods=['POST','GET'])
+def modify_device():
+	Title = request.form.get("devname")
+	MFD = request.form.get("mfd")
+	Units = request.form.get("units")
+	Brand = request.form.get("brand")
+	result=DynamoDB.modify_device(Title=Title,Brand=Brand,MFD=MFD,Units=Units)
+	if(result==True):
+		flash("Device Modified")
+		return redirect(url_for('modify'))
+	else:
+		flash("Device information does not exist")
+		return redirect(url_for('modify'))
+
 @app.route('/admin/delete')
 def delete():
 	return render_template('deletdevice.html')
@@ -131,14 +150,21 @@ def delete_device():
 	flash("Device info deleted")
 	return redirect(url_for('delete'))
 
-@app.route('/admin/add')
-def add():
-	return render_template('adddevice.html')
-
-
 @app.route('/admin/delete_user')
 def delete_user():
 	return render_template('delete_user.html')
+
+@app.route('/admin/delete_user',methods=['POST','GET'])
+def user_deleted():
+	Email=request.form.get("email")
+	Username=request.form.get("Username")
+	result=DynamoDB.delete_item(Username=Username,Email=Email)
+	if(result=="Done"):
+		flash("User Deleted")
+		return render_template('delete_user.html')
+	elif(result=="Not Done"):
+		flash("No User Found")
+		return render_template('delete_user.html')
 
 @app.route('/admin/view_list')
 def view_list():
@@ -154,7 +180,7 @@ def view_user_list():
 @app.route('/admin/return_device',methods=['POST','GET'])
 def ret_device():
 	if request.method == 'POST':
-		result=DynamoDB.returned_device(request.form.get('Username'),request.form.get('Title'))
+		result=DynamoDB.returned_devices(request.form.get('Username'),request.form.get('Title'))
 		if(result == "Done"):
 			flash("Device Returned")
 			return render_template('return_device.html')
