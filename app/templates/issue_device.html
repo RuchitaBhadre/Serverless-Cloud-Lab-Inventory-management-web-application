@@ -149,7 +149,7 @@ body, html {
     <tr>
         <th style="color:white"><i>Select</i></th>
 
-        <th style="color:white"><i>Device Title</i></th>
+        <th style="color:white"><i>Device_Title</i></th>
         <th style="color:white"><i>Brand</i></th>
         <th style="color:white"><i>Manufacturing date</i></th>
         <th style="color:white"><i>Units</i></th>
@@ -161,12 +161,12 @@ body, html {
             <tr>
                 <td>
                 <input style="height: 50px;
-    width: 15%;" type="radio" name="Rent" id="Rent" onchange='this.form.submit();' value='{{row['Device Title']}}_{{row['Brand']}}_{{row['Units']}}' >
+    width: 15%;" type="radio" name="Rent" id="Rent" onchange='this.form.submit();' value='{{row['Device_Title']}}_{{row['Brand']}}_{{row['Units']}}' >
                 </td>
 
-                <td style="color:white">{{row['Device Title']}}</td>
+                <td style="color:white">{{row['Device_Title']}}</td>
                 <td style="color:white">{{row['Brand']}}</td>
-                <td style="color:white">{{row['Manufacturing date']}}</td>
+                <td style="color:white">{{row['MFD']}}</td>
                 <td style="color:white">{{row['Units']}}</td>
             </tr>
       {% endfor %}

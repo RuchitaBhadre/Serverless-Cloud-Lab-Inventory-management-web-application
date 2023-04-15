@@ -126,7 +126,7 @@ body, html {
   <thead>
     <tr>
         <th style="color:white" scope="col"><i>Device ID</i></th>
-        <th style="color:white" scope="col"><i>Device Title</i></th>
+        <th style="color:white" scope="col"><i>Device_Title</i></th>
 
         <th style="color:white" scope="col"><i>Device MFD</i></th>
         <th style="color:white" scope="col"><i>Units</i></th>
@@ -136,7 +136,7 @@ body, html {
       {% for row in display %}
             <tr>
                 <td style="color:white">{{row['Device Id']['N']}}</td>
-                <td style="color:white">{{row['Device Title']['S']}}</td>
+                <td style="color:white">{{row['Device_Title']['S']}}</td>
 
                 <td style="color:white">{{row['MFD']['S']}}</td>
                 <td style="color:white">{{row['Units']['N']}}</td>
