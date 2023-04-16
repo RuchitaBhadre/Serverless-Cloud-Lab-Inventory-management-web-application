@@ -118,6 +118,20 @@ def add_device():
 def modify():
 	return render_template('modify.html')
 
+@app.route('/admin/modify_device',methods=['POST','GET'])
+def modify_device():
+	Title = request.form.get("devname")
+	MFD = request.form.get("mfd")
+	Units = request.form.get("units")
+	Brand = request.form.get("brand")
+	result=DynamoDB.modify_device(Title=Title,Brand=Brand,MFD=MFD,Units=Units)
+	if(result==True):
+		flash("Device Modified")
+		return redirect(url_for('modify'))
+	else:
+		flash("Device information does not exist")
+		return redirect(url_for('modify'))
+
 @app.route('/admin/delete')
 def delete():
 	return render_template('deletdevice.html')
@@ -140,10 +154,23 @@ def add():
 def delete_user():
 	return render_template('delete_user.html')
 
+@app.route('/admin/delete_user',methods=['POST','GET'])
+def user_deleted():
+	Email=request.form.get("email")
+	Username=request.form.get("Username")
+	result=DynamoDB.delete_item(Username=Username,Email=Email)
+	if(result=="Done"):
+		flash("User Deleted")
+		return render_template('delete_user.html')
+	elif(result=="Not Done"):
+		flash("No User Found")
+		return render_template('delete_user.html')
+
 @app.route('/admin/view_list')
 def view_list():
-	display=DynamoDB.get_all_devices()
-	return render_template('view_list.html',display=display)
+	#display=DynamoDB.get_all_devices()
+	display=DynamoDB.searching_devices("")
+	return render_template('view_list.html', display=display)
 
 @app.route('/admin/view_user_list')
 def view_user_list():
@@ -170,6 +197,8 @@ def ret_device():
 def user():
 	return render_template('userhomepage.html')
 
+
+
 @app.route('/Normal/user/search')
 def search():
 	return render_template('search.html')
@@ -183,11 +212,11 @@ def search_executed():
 @app.route('/Normal/user/issue',methods=['POST','GET'])
 def issue():
 	if request.method == 'POST':
-		device={"Device Title":"","Brand":"","Units":0,"Issue_Date":"","End_Date":""}
+		device={"Device_Title":"","Brand":"","Units":0,"Issue_Date":"","End_Date":""}
 		splits=[]
 		Check=request.form.get('Rent')
 		splits=Check.split("_")
-		device['Device Title']=splits[0]
+		device['Device_Title']=splits[0]
 		device['Brand']=splits[1]
 		device['Units']=int(splits[2])
 		device['Issue_Date']=str(datetime.now().date())
@@ -200,10 +229,10 @@ def issue():
 def renew():
 	if request.method == 'POST':
 		Title=request.form.get('devname')
-		Brand=request.form.get('brand')
+		#Brand=request.form.get('brand')
 		Days=request.form.get('days')
 		username=session.get('username')
-		result=DynamoDB.renew(username,Title.upper(),Brand,Days)
+		result=DynamoDB.renew(username,Title.upper(), Days)
 		if(result == "Done"):
 			flash("Return date extended")
 			return render_template('renew.html')
@@ -235,14 +264,14 @@ def confirmation():
 				#payload={"from_address": "preetha1999@gmail.com","from_name": "Cloud Library","to_address": email, "email_subject": "Book Rented today", "text":" Thank you for renting the book from our library.Please return the book by the ","issue_date":return_date,"text1":"to avoid any fine."}
 				#payload={"from_address": "preetha1999@gmail.com","from_name": "Cloud Library","to_address": email, "email_subject": "Book Rented today","user":username,"book:":title,"issue_date":return_date}
 				payload={
-  							"from_address": "ruchitabhadre@gmail.com",
+  							"from_address": "ruchita.bhadre@mail.utoronto.ca",
   							"from_name": "ECE TOOLS LIBRARY",
   							"to_address": email,
   							"email_subject": "Device Rented",
   							"issue_date": return_date,
   							"user": username,
   							"device": title}
-				response = client.invoke(FunctionName='testmail4',InvocationType='RequestResponse',Payload=json.dumps(payload))
+				response = client.invoke(FunctionName='sendMail',InvocationType='RequestResponse',Payload=json.dumps(payload))
 				flash("Please collect the Device from Lab in Galbraith Building on 3rd floor")
 				return redirect(url_for('search'))
 			elif(result=="Already There"):

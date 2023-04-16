@@ -13,7 +13,7 @@ class dynamoManager:
 
     def check_id(self):
         self.start_instance()
-        response = self.dynamo.scan(TableName='Devices')
+        response = self.dynamo.scan(TableName='Devices1')
         start=[]
         for items in response['Items']:
             start.append(int(items['Device Id']['N']))
@@ -41,11 +41,26 @@ class dynamoManager:
         check=self.get_item(Username,Email)
         if(check[0] == []):
             table=self.dynamo_.Table('Registered_users')
+            table1=self.dynamo_.Table('Rent_Logs')
             new_item=table.put_item(
             Item={
                 'Username':Username,
                 'Email_Id':Email,
                 'Password':Password,
+                }
+            )
+            new_item1 = table1.put_item(
+                Item={
+                    'Username': Username,
+                    'Email Id': Email,
+                    'Title1':"None",
+                    'Title2': "None",
+                    'Issue1': "None",
+                    'Issue2': "None",
+                    'Return1':"None",
+                    'Return2': "None",
+
+
                 }
             )
             return [True]
@@ -76,7 +91,7 @@ class dynamoManager:
             table.delete_item(
                 Key={
                     'Username': Username,
-                    'Email_Id': Email,
+                    #'Email_Id': Email,
                 }
             )
             return ("Done")
@@ -86,15 +101,15 @@ class dynamoManager:
 
     def add_device(self,Title,MFD,Units,Brand):
         self.start_instance()
-        check=self.get_specific_item(Title,MFD)
+        check=self.get_specific_item(Title)
         if(check == True):
-            table=self.dynamo_.Table('Devices')
+            table=self.dynamo_.Table('Devices1')
             new_item=table.put_item(
             Item={
-                'Device Title':Title.upper(),
+                'Device_Title':Title.upper(),
                 #'Device Id':int(self.check_id())+1,
                 'Brand' : Brand.upper(),
-                'Manufacturing date':MFD,
+                'MFD':MFD,
                 'Units':int(Units),
                 }
             )
@@ -104,46 +119,49 @@ class dynamoManager:
 
     def delete_device(self, Title):
         self.start_instance()
-        table = self.dynamo_.Table('Devices')
+        table = self.dynamo_.Table('Devices1')
         table.delete_item(
             Key={
-                'Device Title': Title,
+                'Device_Title': Title,
 
             }
         )
 
-    def modify_device(self, Title, MFD, Units):
+    def modify_device(self, Title, Brand, MFD, Units):
         self.start_instance()
         check = self.get_specific_item(Title)
         if (check == False):
-            table = self.dynamo_.Table('Devices')
+            table = self.dynamo_.Table('Devices1')
             table.update_item(
                 Key={
-                    'Device Title': Title,
+                    'Device_Title': Title,
 
                 },
-                UpdateExpression='SET Units = :val2,MFD = :val1',
+                UpdateExpression='SET Brand = :val1, MFD = :val2, Units = :val3',
                 ExpressionAttributeValues={
-                    ':val1': MFD,
-                    ':val2': int(Units)
+                    ':val1': Brand,
+                    ':val2':MFD,
+                    ':val3': int(Units)
                 }
             )
             return (True)
         else:
             return (False)
 
+    """
     def get_all_devices(self):
         self.start_instance()
         response = self.dynamo.scan(
-                TableName='Devices'
+                TableName='Devices1'
             )
         return response['Items']
+        """
 
-    def get_specific_item(self,Title,MFD):
+    def get_specific_item(self,Title):
         self.start_instance()
-        table=self.dynamo_.Table('Devices')
+        table=self.dynamo_.Table('Devices1')
         response=table.query(
-            KeyConditionExpression=Key('Device Title').eq(Title)
+            KeyConditionExpression=Key('Device_Title').eq(Title)
             )
         if(response['Items']==[]):
             return (True)
@@ -152,9 +170,9 @@ class dynamoManager:
 
     def searching_devices(self, keyword):
         self.start_instance()
-        table = self.dynamo_.Table('Devices')
+        table = self.dynamo_.Table('Devices1')
         response = table.scan(
-            FilterExpression=Attr('Device Title').contains(keyword) | Attr('Device Title').contains(keyword.upper())
+            FilterExpression=Attr('Device_Title').contains(keyword) | Attr('Device_Title').contains(keyword.upper())
         )
         if (response['Items'] == []):
             return []
@@ -162,14 +180,14 @@ class dynamoManager:
             return response['Items']
 
 
-    def decreasecopy(self,Title,Brand,Units):
+    def decreasecopy(self,Title,Units):
         self.start_instance()
         current_copies=int(Units)-1
-        table=self.dynamo_.Table('Devices')
+        table=self.dynamo_.Table('Devices1')
         new_item1=table.update_item(
                 Key={
-                    'Device Title':Title,
-                    'Brand':Brand,
+                    'Device_Title':Title,
+                    #'Brand':Brand,
 
                 },
                 UpdateExpression='SET Units = :val1',
@@ -178,13 +196,13 @@ class dynamoManager:
                 }
                 )
 
-    def increasecopy(self,Title,Brand,Units):
+    def increasecopy(self,Title,Units):
         self.start_instance()
         current_copies=int(Units)+1
-        table=self.dynamo_.Table('Devices')
+        table=self.dynamo_.Table('Devices1')
         new_item1=table.update_item(
                 Key={
-                    'Device Title':Title,
+                    'Device_Title':Title,
                     #'Brand' : Brand,
 
                 },
@@ -207,12 +225,12 @@ class dynamoManager:
         number=1
         try:
             if(response['Items'][0]['Title1']=='None'):
-                self.decreasecopy(Title,Brand,Units)
+                self.decreasecopy(Title,Units)
                 statement='SET Title'+str(number)+' = :val1,'+'Issue'+str(number)+' = :val2,'+'Return'+str(number)+' = :val3'
                 rest=table.update_item(
                                 Key={
                                     'Username':username,
-                                    'Email Id':Email[0][0]['Email_Id']
+                                    #'Email Id':Email[0][0]['Email_Id']
                                 },
                                 UpdateExpression=statement,
                                 ExpressionAttributeValues={
@@ -233,7 +251,7 @@ class dynamoManager:
                         rest=table.update_item(
                                         Key={
                                             'Username':username,
-                                            'Email Id':Email[0][0]['Email_Id']
+                                            #'Email Id':Email[0][0]['Email_Id']
                                         },
                                         UpdateExpression=statement,
                                         ExpressionAttributeValues={
@@ -252,7 +270,7 @@ class dynamoManager:
                     rest=table.update_item(
                                 Key={
                                     'Username':username,
-                                    'Email Id':Email[0][0]['Email_Id']
+                                    #'Email Id':Email[0][0]['Email_Id']
                                 },
                                 UpdateExpression=statement,
                                 ExpressionAttributeValues={
@@ -263,13 +281,13 @@ class dynamoManager:
                             )
                     return("Done")
         except:
-            self.decreasecopy(Title,Brand,Units)
+            self.decreasecopy(Title,Units)
             statement='SET Title'+str(number)+' = :val1,'+'Issue'+str(number)+' = :val2,'+'Return'+str(number)+' = :val3, Title2 = :val4, Issue2 = :val5, Return2 = :val6'
             if(response['Items']==[]):
                 rest=table.update_item(
                                 Key={
                                     'Username':username,
-                                    'Email Id':Email[0][0]['Email_Id']
+                                    #'Email Id':Email[0][0]['Email_Id']
                                 },
                                 UpdateExpression=statement,
                                 ExpressionAttributeValues={
@@ -283,7 +301,7 @@ class dynamoManager:
                             )
             return("Done")
 
-    def renew(self, username, Title, Brand, RDate):
+    def renew(self, username, Title, RDate):
         self.start_instance()
         table = self.dynamo_.Table('Rent_Logs')
         response = table.query(
@@ -291,11 +309,11 @@ class dynamoManager:
         )
         if (response['Items'][0]['Title1'] == Title):
             new_date = (datetime.strptime(response['Items'][0]['Return1'].replace("-", ""),
-                                          "%Y%m%d").date() + timedelta(int(RDate)))
+                                          "%Y%m%d").date() + timedelta(days=int(RDate)))
             rest = table.update_item(
                 Key={
                     'Username': username,
-                    'Email Id': response['Items'][0]['Email Id']
+                    #'Email Id': response['Items'][0]['Email Id']
                 },
                 UpdateExpression='SET Return1 = :val1',
                 ExpressionAttributeValues={
@@ -309,7 +327,7 @@ class dynamoManager:
             rest = table.update_item(
                 Key={
                     'Username': username,
-                    'Email Id': response['Items'][0]['Email Id']
+                    #'Email Id': response['Items'][0]['Email Id']
                 },
                 UpdateExpression='SET Return2 = :val1',
                 ExpressionAttributeValues={
@@ -353,11 +371,11 @@ class dynamoManager:
         Email = response['Items'][0]['Email Id']
         if (response['Items'][0]['Title1'] == Title):
             device_info = self.searching_devices(Title)
-            self.increasecopy(Title, device_info[0]['Brand'], device_info[0]['Units'])
+            self.increasecopy(Title, device_info[0]['Units']) #check this for whats being returned from device info
             rest = table.update_item(
                 Key={
                     'Username': Username,
-                    'Email Id': Email
+                    #'Email Id': Email
                 },
                 UpdateExpression='SET Title1 = :val1,Issue1 = :val2,Return1 = :val3',
                 ExpressionAttributeValues={
@@ -369,11 +387,11 @@ class dynamoManager:
             return ("Done")
         elif (response['Items'][0]['Title2'] == Title):
             device_info = self.searching_devices(Title)
-            self.increasecopy(Title, device_info[0]['Brand'], device_info[0]['Units'])
+            self.increasecopy(Title, device_info[0]['Units'])
             rest = table.update_item(
                 Key={
                     'Username': Username,
-                    'Email Id': Email
+                    #'Email Id': Email
                 },
                 UpdateExpression='SET Title2 = :val1,Issue2 = :val2,Return2 = :val3',
                 ExpressionAttributeValues={
