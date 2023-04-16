@@ -99,7 +99,7 @@ body, html {
             <a style="font-size: 15px;" class="nav-link active" aria-current="page" href="{{url_for('add')}}">Add Device</a>
           </li>
           <li class="nav-item" style="padding: 5px 5px;">
-            <a style="font-size: 15px;" class="nav-link active" aria-current="page" href="{{url_for('view_list')}}">View Devices</a>
+            <a style="font-size: 15px;" class="nav-link active" aria-current="page" href="{{url_for('delete')}}">Delete Device</a>
           </li>
           <li class="nav-item" style="padding: 5px 5px;">
             <a style="font-size: 15px;" class="nav-link active" aria-current="page" href="{{url_for('view_user_list')}}">Rent Logs</a>
@@ -125,9 +125,8 @@ body, html {
 <table class="table table-bordered table-opaque mb-0">
   <thead>
     <tr>
-        <th style="color:white" scope="col"><i>Device ID</i></th>
-        <th style="color:white" scope="col"><i>Device_Title</i></th>
-
+        <th style="color:white" scope="col"><i>Device Name</i></th>
+        <th style="color:white" scope="col"><i>Brand</i></th>
         <th style="color:white" scope="col"><i>Device MFD</i></th>
         <th style="color:white" scope="col"><i>Units</i></th>
     </tr>
@@ -135,11 +134,10 @@ body, html {
     <tbody >
       {% for row in display %}
             <tr>
-                <td style="color:white">{{row['Device Id']['N']}}</td>
-                <td style="color:white">{{row['Device_Title']['S']}}</td>
-
-                <td style="color:white">{{row['MFD']['S']}}</td>
-                <td style="color:white">{{row['Units']['N']}}</td>
+                <td style="color:white">{{row['Device_Title']}}</td>
+                <td style="color:white">{{row['Brand']}}</td>
+                <td style="color:white">{{row['MFD']}}</td>
+                <td style="color:white">{{row['Units']}}</td>
             </tr>
       {% endfor %}
     </tbody>

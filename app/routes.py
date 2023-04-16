@@ -118,6 +118,20 @@ def add_device():
 def modify():
 	return render_template('modify.html')
 
+@app.route('/admin/modify_device',methods=['POST','GET'])
+def modify_device():
+	Title = request.form.get("devname")
+	MFD = request.form.get("mfd")
+	Units = request.form.get("units")
+	Brand = request.form.get("brand")
+	result=DynamoDB.modify_device(Title=Title,Brand=Brand,MFD=MFD,Units=Units)
+	if(result==True):
+		flash("Device Modified")
+		return redirect(url_for('modify'))
+	else:
+		flash("Device information does not exist")
+		return redirect(url_for('modify'))
+
 @app.route('/admin/delete')
 def delete():
 	return render_template('deletdevice.html')
@@ -140,10 +154,23 @@ def add():
 def delete_user():
 	return render_template('delete_user.html')
 
+@app.route('/admin/delete_user',methods=['POST','GET'])
+def user_deleted():
+	Email=request.form.get("email")
+	Username=request.form.get("Username")
+	result=DynamoDB.delete_item(Username=Username,Email=Email)
+	if(result=="Done"):
+		flash("User Deleted")
+		return render_template('delete_user.html')
+	elif(result=="Not Done"):
+		flash("No User Found")
+		return render_template('delete_user.html')
+
 @app.route('/admin/view_list')
 def view_list():
-	display=DynamoDB.get_all_devices()
-	return render_template('view_list.html',display=display)
+	#display=DynamoDB.get_all_devices()
+	display=DynamoDB.searching_devices("")
+	return render_template('view_list.html', display=display)
 
 @app.route('/admin/view_user_list')
 def view_user_list():
@@ -169,6 +196,8 @@ def ret_device():
 @app.route('/Normal/user')
 def user():
 	return render_template('userhomepage.html')
+
+
 
 @app.route('/Normal/user/search')
 def search():

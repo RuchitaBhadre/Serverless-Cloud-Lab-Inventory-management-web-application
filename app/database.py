@@ -91,7 +91,7 @@ class dynamoManager:
             table.delete_item(
                 Key={
                     'Username': Username,
-                    'Email_Id': Email,
+                    #'Email_Id': Email,
                 }
             )
             return ("Done")
@@ -101,7 +101,7 @@ class dynamoManager:
 
     def add_device(self,Title,MFD,Units,Brand):
         self.start_instance()
-        check=self.get_specific_item(Title,MFD)
+        check=self.get_specific_item(Title)
         if(check == True):
             table=self.dynamo_.Table('Devices1')
             new_item=table.put_item(
@@ -127,7 +127,7 @@ class dynamoManager:
             }
         )
 
-    def modify_device(self, Title, MFD, Units):
+    def modify_device(self, Title, Brand, MFD, Units):
         self.start_instance()
         check = self.get_specific_item(Title)
         if (check == False):
@@ -137,24 +137,27 @@ class dynamoManager:
                     'Device_Title': Title,
 
                 },
-                UpdateExpression='SET Units = :val2,MFD = :val1',
+                UpdateExpression='SET Brand = :val1, MFD = :val2, Units = :val3',
                 ExpressionAttributeValues={
-                    ':val1': MFD,
-                    ':val2': int(Units)
+                    ':val1': Brand,
+                    ':val2':MFD,
+                    ':val3': int(Units)
                 }
             )
             return (True)
         else:
             return (False)
 
+    """
     def get_all_devices(self):
         self.start_instance()
         response = self.dynamo.scan(
                 TableName='Devices1'
             )
         return response['Items']
+        """
 
-    def get_specific_item(self,Title,MFD):
+    def get_specific_item(self,Title):
         self.start_instance()
         table=self.dynamo_.Table('Devices1')
         response=table.query(
@@ -177,7 +180,7 @@ class dynamoManager:
             return response['Items']
 
 
-    def decreasecopy(self,Title,Brand,Units):
+    def decreasecopy(self,Title,Units):
         self.start_instance()
         current_copies=int(Units)-1
         table=self.dynamo_.Table('Devices1')
@@ -193,7 +196,7 @@ class dynamoManager:
                 }
                 )
 
-    def increasecopy(self,Title,Brand,Units):
+    def increasecopy(self,Title,Units):
         self.start_instance()
         current_copies=int(Units)+1
         table=self.dynamo_.Table('Devices1')
@@ -222,7 +225,7 @@ class dynamoManager:
         number=1
         try:
             if(response['Items'][0]['Title1']=='None'):
-                self.decreasecopy(Title,Brand,Units)
+                self.decreasecopy(Title,Units)
                 statement='SET Title'+str(number)+' = :val1,'+'Issue'+str(number)+' = :val2,'+'Return'+str(number)+' = :val3'
                 rest=table.update_item(
                                 Key={
@@ -278,7 +281,7 @@ class dynamoManager:
                             )
                     return("Done")
         except:
-            self.decreasecopy(Title,Brand,Units)
+            self.decreasecopy(Title,Units)
             statement='SET Title'+str(number)+' = :val1,'+'Issue'+str(number)+' = :val2,'+'Return'+str(number)+' = :val3, Title2 = :val4, Issue2 = :val5, Return2 = :val6'
             if(response['Items']==[]):
                 rest=table.update_item(
@@ -368,7 +371,7 @@ class dynamoManager:
         Email = response['Items'][0]['Email Id']
         if (response['Items'][0]['Title1'] == Title):
             device_info = self.searching_devices(Title)
-            self.increasecopy(Title, device_info[0]['Brand'], device_info[0]['Units'])
+            self.increasecopy(Title, device_info[0]['Units']) #check this for whats being returned from device info
             rest = table.update_item(
                 Key={
                     'Username': Username,
@@ -384,11 +387,11 @@ class dynamoManager:
             return ("Done")
         elif (response['Items'][0]['Title2'] == Title):
             device_info = self.searching_devices(Title)
-            self.increasecopy(Title, device_info[0]['Brand'], device_info[0]['Units'])
+            self.increasecopy(Title, device_info[0]['Units'])
             rest = table.update_item(
                 Key={
                     'Username': Username,
-                    'Email Id': Email
+                    #'Email Id': Email
                 },
                 UpdateExpression='SET Title2 = :val1,Issue2 = :val2,Return2 = :val3',
                 ExpressionAttributeValues={
