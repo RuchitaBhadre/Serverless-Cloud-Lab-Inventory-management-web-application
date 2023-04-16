@@ -94,6 +94,13 @@ class dynamoManager:
                     #'Email_Id': Email,
                 }
             )
+            table1 = self.dynamo_.Table('Rent_Logs')
+            table1.delete_item(
+                Key={
+                    'Username': Username,
+                    # 'Email_Id': Email,
+                }
+            )
             return ("Done")
         else:
             return ("Not Done")
