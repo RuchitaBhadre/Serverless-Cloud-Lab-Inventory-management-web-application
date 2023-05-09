@@ -1,10 +1,5 @@
 ﻿`             `![](images/Aspose.Words.3eeba9df-3375-4898-a3b6-dcf8c4bf8b8d.001.png)
 
-<a name="_11qsj4b10fx9"></a>ECE1779- Introduction to Cloud Computing
-
------
-# <a name="_jr6s14t0ehk4"></a>Report for Assignment 3- Serverless Computing 
-Ruchita Rajkumar Bhadre - 1008497244                                                Sneha Prem Kiron - 1009703402
 
 -----
 **Application Description:  ECE TOOLS Lab Inventory**
