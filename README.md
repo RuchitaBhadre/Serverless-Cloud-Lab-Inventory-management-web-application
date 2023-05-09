@@ -1,6 +1,3 @@
-﻿`             `![](images/Aspose.Words.3eeba9df-3375-4898-a3b6-dcf8c4bf8b8d.001.png)
-
-
 -----
 **Application Description:  ECE TOOLS Lab Inventory**
 
