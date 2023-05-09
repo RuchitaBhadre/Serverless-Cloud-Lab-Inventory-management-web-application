@@ -1,5 +1,5 @@
 
-**Application Description:  ECE TOOLS Lab Inventory**
+** Application Description:  ECE TOOLS Lab Inventory **
 
 We developed a Cloud Lab Inventory management project that manages and stores devices’ information electronically according to users needs. The system helps both users and Lab Inventory admin to keep a constant track of all the devices available in the Lab Inventory. It allows both the admin and the student to search for the desired device electronically. This system reduces manual work to a great extent and allows smooth flow of Lab Inventory activities by removing chances of errors in the details. The Cloud Lab Inventory excludes the use of paper work by managing all the devices information electronically. Admin can keep updating the system by providing the new devices arrival in system and their availability thus users need not to go to the Lab Inventory for issuing purposes. Our web application for Lab Inventory management can be divided into two modules. One module is for Administrators of the Lab Inventory and the other module is for the users.
 
