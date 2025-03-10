@@ -6,15 +6,15 @@ from datetime import datetime,timedelta
 import logging
 
 ses_client = boto3.client("ses",
-                          aws_access_key_id="AKIARQKRVO4SRFYI4KPJ",
-		                  aws_secret_access_key="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",
-		                  region_name="us-east-1"
+                          aws_access_key_id="xxxxxxx",
+		                  aws_secret_access_key="xxxxxxxxxx",
+		                  region_name="xxxxxx"
 		                  )
 
 client = boto3.client('lambda',
-                          aws_access_key_id="AKIARQKRVO4SRFYI4KPJ",
-		                  aws_secret_access_key="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",
-		                  region_name="us-east-1"
+                          aws_access_key_id="xxxxxx",
+		                  aws_secret_access_key="xxxxxx",
+		                  region_name="xxxxx"
 		                  )
 
 @app.before_request
@@ -253,18 +253,12 @@ def confirmation():
 			result=DynamoDB.RentingDevice(username,request.form.get('devname'),request.form.get('brand'),request.form.get('Units'),request.form.get('IssueDate'),request.form.get('ReturnDate'))
 			if(result=="Done"):
 				username=session.get('username')
-				#print(username)
 				email=DynamoDB.get_email1_item(Username=username)
 				title=request.form.get('devname')
 				return_date=request.form.get('ReturnDate')
-				#print(return_date)
-				#print(email)
-				#print(title)
-				#payload = {"from_address": "preetha1999@gmail.com","from_name": "Cloud Library","to_address":email,"email_subject": "Book Rented today"}
-				#payload={"from_address": "preetha1999@gmail.com","from_name": "Cloud Library","to_address": email, "email_subject": "Book Rented today", "text":" Thank you for renting the book from our library.Please return the book by the ","issue_date":return_date,"text1":"to avoid any fine."}
-				#payload={"from_address": "preetha1999@gmail.com","from_name": "Cloud Library","to_address": email, "email_subject": "Book Rented today","user":username,"book:":title,"issue_date":return_date}
+				
 				payload={
-  							"from_address": "ruchita.bhadre@mail.utoronto.ca",
+  							"from_address": "xxxxxxxx",
   							"from_name": "ECE TOOLS LIBRARY",
   							"to_address": email,
   							"email_subject": "Device Rented",
