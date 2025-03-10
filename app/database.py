@@ -5,7 +5,7 @@ from datetime import datetime,timedelta
 
 class dynamoManager:
 
-    def __init__(self,key_id="AKIARQKRVO4SRFYI4KPJ",secret_key="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",region="us-east-1"):
+    def __init__(self,key_id="sssss",secret_key="xxxxx",region="xxxx"):
         self.key_id=key_id
         self.secret_key=secret_key
         self.region=region
